@@ -11,34 +11,40 @@ class MoviesController < ApplicationController
   end
 
   def index
-    # @movies = Movie.all
-    @all_ratings = Movie.order(:rating).select(:rating).map(&:rating).uniq
-    
     session[:ratings] = params[:ratings] unless params[:ratings].nil?
     session[:order] = params[:order] unless params[:order].nil?
-    
-    # if params[:ratings]
-	   #   @checked_ratings = params[:ratings].keys
-	      
-	 if session[:ratings]
-	      @checked_ratings = params[:ratings].keys
-	    else
-	      @checked_ratings = @all_ratings
-	    end
-
-	    @checked_ratings.each do |rating|
-        # params[rating] = true
-        session[rating] = true
-      end
-    
-    # if params[:sort]
-	   #   @movies = Movie.order(params[:sort])
-	 if session[:sort]
-	      @movies = Movie.order(session[:sort])
-	    else
-	      @movies = Movie.where(:rating => @checked_ratings)
-	    end
+    @all_ratings = ['G','PG','PG-13','R']
+   
+    if session[:ratings].nil?
+      @movies = Movie.order session[:order]
+    else
+      array_ratings = session[:ratings].keys
+      @chosen_ratings = array_ratings
+      @movies = Movie.where(rating: array_ratings).order session[:order]
+    end
   end
+
+  # def index
+  #   # @movies = Movie.all
+  #   @all_ratings = Movie.order(:rating).select(:rating).map(&:rating).uniq
+    
+  #   if params[:ratings]
+	 #     @checked_ratings = params[:ratings].keys
+	 #   else
+	 #     @checked_ratings = @all_ratings
+	 #   end
+
+	 #   @checked_ratings.each do |rating|
+  #       params[rating] = true
+  #     end
+    
+  #   if params[:sort]
+	 #     @movies = Movie.order(params[:sort])
+	 #   else
+	 #    # @movies = Movie.all
+	 #     @movies = Movie.where(:rating => @checked_ratings)
+	 #   end
+  # end
 
   def new
     # default: render 'new' template
